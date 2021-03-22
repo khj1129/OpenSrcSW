@@ -8,18 +8,25 @@ public class kuir {
     {
         String path = "C:\\Users\\Chamo\\Documents\\SimpleIR\\2주차 실습 html\\2주차 실습 html";
           
-        if(args[0].equals("-c./data"))
+        if(args.length>1)
         {
-            MakeCollection collection = new MakeCollection();
-            collection.GetFileTexts(path);
-            System.out.println("set collection");
+            if(args[1].equals("./data")) //-c 
+            {
+                MakeCollection collection = new MakeCollection();
+                collection.GetFileTexts(path);
+                System.out.println("set collection");
+            }
+            else if(args[1].equals("./collection.xml")) //-k
+            {
+                MakeKeyword keyWord = new MakeKeyword();
+                keyWord. SetKeyword(path);
+                System.out.println("set keyword collection");
+            }
         }
-        else if(args[0].equals("-k./collection.xml"))
+        else
         {
-            MakeKeyword keyWord = new MakeKeyword();
-            keyWord. SetKeyword(path);
-            System.out.println("set keyword collection");
+            System.out.println("입력 값이 없습니다");
         }
-         
+        
     }
 }
