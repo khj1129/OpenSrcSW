@@ -1,6 +1,9 @@
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,6 +21,10 @@ import org.snu.ids.kkma.index.KeywordExtractor;
 import org.snu.ids.kkma.index.KeywordList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class MakeKeyword 
 {
@@ -28,92 +35,104 @@ public class MakeKeyword
         SetKeyword(path);
     }
     */
-    public void SetKeyword(String path) throws ParserConfigurationException, TransformerException,IOException
+    public NodeList GetNodeList(String path) throws ParserConfigurationException, SAXException, IOException
     {
-        String outputPath="C:\\Users\\Chamo\\Documents\\SimpleIR\\index.xml";
+        File file = new File(path);
+        FileInputStream inputStream = new FileInputStream(file);
+        InputStreamReader reader = new InputStreamReader(inputStream,"UTF-8");
+        InputSource src = new InputSource(reader);
+        src.setEncoding("UTF-8");
 
-        File folder = new File(path);
-        File []fileList = folder.listFiles();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+
+        Document document = documentBuilder.parse(src);
                 
-        System.out.println("프로그램이 실행됩니다");
-        if(!folder.exists())
-        {
-            System.out.println("경로에 파일이 없습니다");
-            return ;
-        }
-
-        System.out.println("경로에 파일이 있습니다"+fileList.length);
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-        Document doc = docBuilder.newDocument();
-        //root 생성
-        Element root = doc.createElement("doc");
-        doc.appendChild(root);
-        int index=0;
-        int i, length;
+        return document.getDocumentElement().getChildNodes();
+    }
+    public void SetKeyword(String path) throws ParserConfigurationException, TransformerException,IOException, SAXException
+    {
+        int i,j, docLength;
         String title ="";
         String allText="";
-        String removedPBody="";
         String newBody="";
+        Node node;
+        
+        String outputPath="C:\\Users\\Chamo\\Documents\\SimpleIR\\index.xml";
 
-        MakeCollection mc = new MakeCollection();
+        NodeList nodes = GetNodeList(path);
+        docLength = nodes.getLength();
 
-        for(File file : fileList)
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+        Document doc = documentBuilder.newDocument();
+        Element root = doc.createElement("doc");
+        doc.appendChild(root);
+
+        Element ele,childEle;
+        String nodeName;
+        NodeList childList ;
+
+        System.out.println(docLength);
+        for(i=0; i<docLength; i++)
         {
-            if(file.isFile())
+            node = nodes.item(i);
+            if(node.getNodeType()==Node.ELEMENT_NODE)
             {
-                System.out.println("파일을 넣습니다 : "+index);
-             
+                ele = (Element)node;
+                nodeName = ele.getAttribute("id");
+                childList = ele.getChildNodes();
+                title = ((Element)childList.item(0)).getTextContent();
+                childEle = (Element)childList.item(1);
+                
+                //id 등록
                 Element newElementID = doc.createElement("doc");
-                newElementID.setAttribute("id", Integer.toString((index)));
+                newElementID.setAttribute("id", nodeName);
+
+                //title 등록
                 Element newElementTitle = doc.createElement("title");
                 newElementID.appendChild(newElementTitle);
 
-                allText = mc.GetAllText(file);
-                //title 등록
-                title = mc.GetTitleText(allText);//StringUtils.substringBetween(allText, "<title>", "</title>");
-                System.out.println("title: "+title);
                 newElementTitle.appendChild(doc.createTextNode(title));
-
+                System.out.println("title: "+title);
+                                                               
                 //body 추출 및 등록
-                removedPBody  = mc.GetBodyText(allText);
+                allText = childEle.getTextContent();
+                newBody = GetKeyWord(allText);
 
-                KeywordExtractor ke = new KeywordExtractor();
-                KeywordList kl = ke.extractKeyword(removedPBody,true);
-
-                length = kl.size();
-                Keyword kwrd;
-                kwrd = kl.get(0);
-                newBody = kwrd.getString()+":"+kwrd.getCnt();
-
-                for(i=1; i<length; i++)
-                {
-                    kwrd = kl.get(i);
-                    newBody += "#"+kwrd.getString()+":"+kwrd.getCnt();
-                }
-
-                //System.out.println(newBody);
                 Element newElementBody = doc.createElement("body");
                 newElementID.appendChild(newElementBody);
                 newElementBody.appendChild(doc.createTextNode(newBody));
 
                 root.appendChild(newElementID);
-                index++;
             }
-     
-            //파일 생성
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.ENCODING,"UTF-8");
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new FileOutputStream(new File(outputPath)));
-     
-            System.out.println("프로그램이 실행됩니다");
-            transformer.transform(source,result);
-
-            System.out.println("처리 완료");
-
         }
+         //파일 생성
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.ENCODING,"UTF-8");
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(new FileOutputStream(new File(outputPath)));
+        transformer.transform(source,result);
+        System.out.println("처리 완료");
     }
          
+    public String GetKeyWord(String allText)
+    {
+        int j, length;
+        KeywordExtractor ke = new KeywordExtractor();
+        KeywordList kl = ke.extractKeyword(allText,true);
+        length = kl.size();
+        Keyword kwrd;
+        kwrd = kl.get(0);
+        String newBody = kwrd.getString()+":"+kwrd.getCnt();
+        for(j=1; j<length; j++)
+        {
+            kwrd = kl.get(j);
+            newBody += "#"+kwrd.getString()+":"+kwrd.getCnt();
+        }
+        System.out.println(newBody);
+
+        return newBody;
+    }
 }
