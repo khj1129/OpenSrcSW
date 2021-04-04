@@ -134,7 +134,7 @@ public class MakeCollection{
 
         return allText;
     }
-    public static String GetTitleText(String allText)
+    public String GetTitleText(String allText)
     {
         String title ="";
         title = StringUtils.substringBetween(allText, "<title>", "</title>");

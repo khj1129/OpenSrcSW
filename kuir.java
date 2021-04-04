@@ -1,50 +1,32 @@
 import java.io.IOException;
-import java.nio.file.Path;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.xml.sax.SAXException;
-
 public class kuir {
-    public static void main(String[] args) throws ParserConfigurationException, TransformerException, IOException, SAXException, ClassNotFoundException
+    public static void main(String[] args) throws ParserConfigurationException, TransformerException, IOException 
     {
-        //String path = "C:\\Users\\Chamo\\Documents\\SimpleIR\\2주차 실습 html\\2주차 실습 html";
-        
-        
+        String path = "C:\\Users\\Chamo\\Documents\\SimpleIR\\2주차 실습 html\\2주차 실습 html";
+          
         if(args.length>1)
         {
-            if(args[0].equals("-c")) // ./data/
+            if(args[1].equals("./data")) //-c 
             {
                 MakeCollection collection = new MakeCollection();
-                collection.GetFileTexts(args[1]);
+                collection.GetFileTexts(path);
                 System.out.println("set collection");
             }
-            else if(args[0].equals("-k")) // ./collection.xml
+            else if(args[1].equals("./collection.xml")) //-k
             {
                 MakeKeyword keyWord = new MakeKeyword();
-                keyWord. SetKeyword(args[1]);
+                keyWord. SetKeyword(path);
                 System.out.println("set keyword collection");
-            }
-            else if(args[0].equals("-i")) //./index.xml
-            {
-                indexer _indexer = new indexer();
-                _indexer.MakeIndexer(args[1]);
-                System.out.println("set indexer");
-            }
-            //테스트용 
-            else if(args[0].equals("-p"))
-            {
-                indexer _indexer = new indexer();
-                _indexer.MakeIndexer(args[1]);
-                System.out.println("set indexer print");
             }
         }
         else
         {
             System.out.println("입력 값이 없습니다");
         }
-
-
+        
     }
 }
