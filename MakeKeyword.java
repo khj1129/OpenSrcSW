@@ -117,12 +117,20 @@ public class MakeKeyword
         System.out.println("처리 완료");
     }
          
+    public KeywordList GetKeywordList(String allText)
+    {
+        KeywordExtractor ke = new KeywordExtractor();
+        KeywordList kl = ke.extractKeyword(allText,true);
+
+        return kl;
+    }
     public String GetKeyWord(String allText)
     {
         int j, length;
-        KeywordExtractor ke = new KeywordExtractor();
-        KeywordList kl = ke.extractKeyword(allText,true);
+        
+        KeywordList kl = GetKeywordList(allText);
         length = kl.size();
+        
         Keyword kwrd;
         kwrd = kl.get(0);
         String newBody = kwrd.getString()+":"+kwrd.getCnt();
