@@ -43,7 +43,7 @@ public class MakeCollection{
    */
    public void GetFileTexts(String path) throws ParserConfigurationException, TransformerException, IOException
    {
-        String outputPath="C:\\Users\\Chamo\\Documents\\SimpleIR\\collection.xml";
+        String outputPath="C:\\Users\\Chamo\\Documents\\SimpleIR\\src\\collection.xml";
 
         File folder = new File(path);
         File []fileList = folder.listFiles();
@@ -150,4 +150,5 @@ public class MakeCollection{
 
         return removedPBody;
     }
+
 }

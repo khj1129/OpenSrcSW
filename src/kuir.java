@@ -1,15 +1,23 @@
+//<<<<<<< HEAD
+//=======
+import java.io.IOException;
+//import java.util.Scanner;
+
+//>>>>>>> feature
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.io.IOException;
-import java.nio.file.Path;
+//import java.io.IOException;
+//import java.nio.file.Path;
 import org.xml.sax.SAXException;
 
 public class kuir {
     public static void main(String[] args) throws ParserConfigurationException, TransformerException, IOException, SAXException, ClassNotFoundException
     {
+//<<<<<<< HEAD
         
-        
-    	if(args.length>1)
+//=======
+        if(args.length>=1)
+//>>>>>>> feature
         {
             if(args[0].equals("-c")) // ./data/
             {
@@ -35,22 +43,24 @@ public class kuir {
                 _indexer.MakeIndexer(args[1]);
                 System.out.println("set indexer");
             }
-            else if(args[0].equals("-s"))
+            else if(args[0].equals("-s")) //./index.post
             {
                 if(args.length>3 && args[2].equals("-q"))
                 {
                     System.out.println("#### search query ####");
 
                     searcher sc = new searcher();
-                    sc.GetTopSimilarity(args[1],args[3]);
+                    sc.CalcSim(args[1],args[3]);
                 }
             }
         }
         else
         {
             System.out.println("argument가 없습니다.");
+            //searcher sc = new searcher();
+            //sc.CalcSim("./src/index.post","밀은 일반적으로 무료로 처리할 수 있다.");
         }
-
-
+        
+        
     }
 }

@@ -61,14 +61,14 @@ public class indexer
 
     public void MakeIndexer(String path) throws IOException, ParserConfigurationException, SAXException, TransformerConfigurationException
     {
-        String outputPath="C:\\Users\\Chamo\\Documents\\SimpleIR\\index.post";
+        String outputPath="C:\\Users\\Chamo\\Documents\\SimpleIR\\src\\index.post";
         int i,length;
         Node node;
 
         File file = new File(path);
 
         FileInputStream inputStream = new FileInputStream(file);
-        InputStreamReader reader = new InputStreamReader(inputStream);
+        InputStreamReader reader = new InputStreamReader(inputStream,"UTF-8");
         InputSource source = new InputSource(reader);
         source.setEncoding("UTF-8");
 
@@ -103,6 +103,7 @@ public class indexer
         {
             ie.CalcPercentage(length);
             postHashMap.put(ie.Key,ie.percentageDic);
+           // System.out.println("key : "+ie.Key+", percentage : "+ie.percentageDic);
         }
         
         FileOutputStream fileStream = new FileOutputStream(outputPath);
@@ -111,33 +112,41 @@ public class indexer
         objectOutputStream.close();
     }
     
-    public void ReadPost(String path) throws IOException, ClassNotFoundException
+    public HashMap GetPos(String path) throws IOException, ClassNotFoundException
     {
+        // String path = "./index.post";
         FileInputStream inputStream = new FileInputStream(path);
+        
         ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-
         Object object = objectInputStream.readObject();
         objectInputStream.close();
+        HashMap hashMap = (HashMap)object;
 
-        /*
-        var hashMap = (HashMap)object;
+        return hashMap;
+    }
+    
+    public void ReadPost(String path) throws IOException, ClassNotFoundException
+    {   
+        HashMap hashMap = GetPos(path);//"./index.post"       
+
         Iterator<String> it = hashMap.keySet().iterator();
 
         while(it.hasNext())
         {
             String key = it.next();
-            var insideHashMap = (HashMap)hashMap.get(key);
+            HashMap insideHashMap = (HashMap)hashMap.get(key);
             Iterator<String> insideIt = insideHashMap.keySet().iterator();
             String value=""; 
             while(insideIt.hasNext())
             {
                 String insideKey = insideIt.next();
-                value+=(String)insideHashMap.get(insideKey)+" ";
+                value+=insideKey+" "+(String)insideHashMap.get(insideKey)+" ";
             }
             System.out.println("key : "+key+" , value : "+value);
         }
-        */
+        
     }
+   
     public void ParsingTexts(String allText,int id)
     {
         int i,length;
@@ -148,6 +157,7 @@ public class indexer
         {
             String[] dividedStr = StringUtils.split(splitStr[i]," : ");
             AddKey(dividedStr[0], id, Integer.parseInt(dividedStr[1]));
+            //System.out.println(i+"키값 : "+dividedStr[0]);
         }
 
     }

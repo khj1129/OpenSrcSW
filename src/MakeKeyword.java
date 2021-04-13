@@ -58,7 +58,7 @@ public class MakeKeyword
         String newBody="";
         Node node;
         
-        String outputPath="C:\\Users\\Chamo\\Documents\\SimpleIR\\index.xml";
+        String outputPath="C:\\Users\\Chamo\\Documents\\SimpleIR\\src\\index.xml";
 
         NodeList nodes = GetNodeList(path);
         docLength = nodes.getLength();
@@ -73,7 +73,6 @@ public class MakeKeyword
         String nodeName;
         NodeList childList ;
 
-        System.out.println(docLength);
         for(i=0; i<docLength; i++)
         {
             node = nodes.item(i);
@@ -94,7 +93,7 @@ public class MakeKeyword
                 newElementID.appendChild(newElementTitle);
 
                 newElementTitle.appendChild(doc.createTextNode(title));
-                System.out.println("title: "+title);
+                //System.out.println("title: "+title);
                                                                
                 //body 추출 및 등록
                 allText = childEle.getTextContent();
@@ -117,12 +116,20 @@ public class MakeKeyword
         System.out.println("처리 완료");
     }
          
+    public KeywordList GetKeywordList(String allText)
+    {
+        KeywordExtractor ke = new KeywordExtractor();
+        KeywordList kl = ke.extractKeyword(allText,true);
+
+        return kl;
+    }
     public String GetKeyWord(String allText)
     {
         int j, length;
-        KeywordExtractor ke = new KeywordExtractor();
-        KeywordList kl = ke.extractKeyword(allText,true);
+        
+        KeywordList kl = GetKeywordList(allText);
         length = kl.size();
+        
         Keyword kwrd;
         kwrd = kl.get(0);
         String newBody = kwrd.getString()+":"+kwrd.getCnt();
